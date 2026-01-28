@@ -23,7 +23,7 @@ const itemSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "default-profile.png",
+      default: null,
     },
     status: {
       type: String,
