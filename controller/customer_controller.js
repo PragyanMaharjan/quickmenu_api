@@ -3,6 +3,14 @@ const asyncHandler = require("../middleware/async");
 const fs = require("fs");
 const path = require("path");
 
+const buildAbsolutePath = (relativePath) => {
+  if (!relativePath) {
+    return null;
+  }
+  const normalized = relativePath.replace(/^\/+/, "");
+  return path.resolve(__dirname, "..", normalized);
+};
+
 exports.createCustomer = asyncHandler(async (req, res) => {
     const {name, email, password, phoneNumber} = req.body;
 
@@ -83,8 +91,8 @@ exports.updateCustomer = asyncHandler(async (req, res) => {
     if (req.file) {
         // Delete old image if it exists
         if (customer.profilePicture && customer.profilePicture !== null) {
-            const oldImagePath = path.join(customer.profilePicture);
-            if (fs.existsSync(oldImagePath)) {
+          const oldImagePath = buildAbsolutePath(customer.profilePicture);
+          if (oldImagePath && fs.existsSync(oldImagePath)) {
                 try {
                     fs.unlinkSync(oldImagePath);
                 } catch (err) {
@@ -93,7 +101,7 @@ exports.updateCustomer = asyncHandler(async (req, res) => {
             }
         }
         // Store full path
-        customer.profilePicture = `/public/profile_picture/${req.file.filename}`;
+        customer.profilePicture = `uploads/profile_picture/${req.file.filename}`;
     }
 
     if (password) {
@@ -127,17 +135,13 @@ exports.deleteCustomer = asyncHandler(async (req, res) => {
     }
       // Remove the student's profile picture if it exists
     if (
-        customer.profilePicture &&
-        customer.profilePicture !== "default-profile.png"
+      customer.profilePicture &&
+      customer.profilePicture !== "default-profile.png"
     ) {
-        const profilePicturePath = path.join(
-        __dirname,
-        "../public/profile_pictures",
-        student.profilePicture
-        );
-        if (fs.existsSync(profilePicturePath)) {
+      const profilePicturePath = buildAbsolutePath(customer.profilePicture);
+      if (profilePicturePath && fs.existsSync(profilePicturePath)) {
         fs.unlinkSync(profilePicturePath);
-        }
+      }
     }
 
     await customer.deleteOne();
@@ -176,8 +180,8 @@ exports.uploadProfilePicture = asyncHandler(async (req, res, next) => {
 
   // Delete old image if it exists
   if (customer.profilePicture && customer.profilePicture !== null) {
-    const oldImagePath = path.join(customer.profilePicture);
-    if (fs.existsSync(oldImagePath)) {
+    const oldImagePath = buildAbsolutePath(customer.profilePicture);
+    if (oldImagePath && fs.existsSync(oldImagePath)) {
       try {
         fs.unlinkSync(oldImagePath);
       } catch (err) {
@@ -186,8 +190,8 @@ exports.uploadProfilePicture = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // Create full path for the uploaded file: /public/profile_picture/{filename}
-  const photoUrl = `/public/profile_picture/${req.file.filename}`;
+  // Store relative path for the uploaded file: uploads/profile_picture/{filename}
+  const photoUrl = `uploads/profile_picture/${req.file.filename}`;
   
   // Update customer with new image URL
   customer.profilePicture = photoUrl;

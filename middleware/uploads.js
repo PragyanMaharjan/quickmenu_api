@@ -7,12 +7,12 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         try {
             if (file.fieldname === "profilePicture") {
-                const profilePath = path.resolve(__dirname, '..', 'public', 'profile_picture');
+                const profilePath = path.resolve(__dirname, '..', 'uploads', 'profile_picture');
                 fs.mkdirSync(profilePath, { recursive: true });
                 cb(null, profilePath);
                 return;
             } else if (file.fieldname === "ItemPhoto") {
-                const itemsPath = path.resolve(__dirname, '..', 'public', 'item_photo');
+                const itemsPath = path.resolve(__dirname, '..', 'uploads', 'item_photo');
                 fs.mkdirSync(itemsPath, { recursive: true });
                 cb(null, itemsPath);
                 return;

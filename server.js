@@ -41,14 +41,14 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ===============================
-// 📂 STATIC FILES (THIS IS THE FIX)
+// 📂 STATIC FILES
 // ===============================
-// Files inside /public will be accessible directly
+// Files inside /uploads will be accessible directly
 // Example:
-// public/profile_picture/test.jpg
-// URL → http://localhost:3000/profile_picture/test.jpg
+// uploads/profile_picture/test.jpg
+// URL -> http://localhost:3000/uploads/profile_picture/test.jpg
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ===============================
 // 🛡️ Middleware
@@ -63,9 +63,15 @@ app.use(limiter);
 // 🚏 Routes
 // ===============================
 const customerRoutes = require("./routes/customer");
+const orderRoutes = require("./routes/order");
+const couponRoutes = require("./routes/coupon");
+const paymentRoutes = require("./routes/payment");
 
 app.use("/quickScan/customers/login", authLimiter);
 app.use("/quickScan/customers", customerRoutes);
+app.use("/quickScan/orders", orderRoutes);
+app.use("/quickScan/coupons", couponRoutes);
+app.use("/quickScan/payments", paymentRoutes);
 
 // ===============================
 // ❌ Error Handler

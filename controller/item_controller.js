@@ -3,6 +3,9 @@ const Item = require("../models/item_model");
 const path = require("path");
 const fs = require("fs");
 
+const buildItemImagePath = (filename) =>
+  path.resolve(__dirname, "..", "uploads", "item_photo", filename);
+
 
 exports.createItem = asyncHandler(async (req, res) => {
   const { itemName, description, type, price} =
@@ -103,7 +106,7 @@ exports.updateItem = asyncHandler(async (req, res) => {
   if (req.file) {
     // Delete old image if it exists
     if (item.image && item.image !== "default-profile.png") {
-      const oldImagePath = path.join("public", "item_photo", item.image);
+      const oldImagePath = buildItemImagePath(item.image);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }
@@ -162,7 +165,7 @@ exports.uploadItemPhoto = asyncHandler(async (req, res, next) => {
 
     // Delete old image if it exists
     if (item.image && item.image !== "default-profile.png") {
-      const oldImagePath = path.join("public", "item_photo", item.image);
+      const oldImagePath = buildItemImagePath(item.image);
       if (fs.existsSync(oldImagePath)) {
         fs.unlinkSync(oldImagePath);
       }

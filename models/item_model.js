@@ -36,4 +36,9 @@ const itemSchema = new mongoose.Schema(
   }
 );
 
+// Add indexes for faster queries
+itemSchema.index({ type: 1 });
+itemSchema.index({ status: 1 });
+itemSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model("Item", itemSchema);
